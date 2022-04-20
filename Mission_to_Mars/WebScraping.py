@@ -8,12 +8,12 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 
 def scrape_all():
-    # Initiate headless driver for deployment
+    
     executable_path = {'executable_path': ChromeDriverManager().install()}
     browser = Browser('chrome', **executable_path, headless=True)
 
     title, body = mars_news(browser)
-    # Run all scraping functions and store results in a dictionary
+    
     data = {
         "news_title": title,
         "news_paragraph": body,
@@ -21,10 +21,12 @@ def scrape_all():
         "facts": mars_table(),
         "hemispheres": mars_hemispheres(browser),
     }
-
-    # Stop webdriver and return data
     browser.quit()
-    return data
+    client = pymongo.MongoClient('mongodb://localhost:27017')
+    db = client.mars_db
+    collection = db.mars 
+    
+    collection.insert_one(data)
 
 def mars_table():
 
@@ -35,16 +37,11 @@ def mars_table():
     #create dataframe
     df = tables[0]
 
-    df1 = tables[1]
-
-
     new_header = df.iloc[0] 
     df = df[1:]
     df.columns = new_header
 
-
-
-    return df.to_html('marsTable.html')
+    return df.to_html(classes="table")
 
 
 def mars_news(browser):
@@ -60,8 +57,8 @@ def mars_news(browser):
     html = browser.html
     soup = bs(html, 'html.parser')
 
-    title = soup.find_all(class_='content_title')[0].text
-    body = soup.find_all(class_='article_teaser_body')[0].text
+    title = soup.find(class_='content_title').text
+    body = soup.find(class_='article_teaser_body').text
 
 
     return title, body
@@ -112,6 +109,7 @@ def mars_hemispheres(browser):
             image_url = (f"https://marshemispheres.com/{link['href']}")
             image_title = link.text
             image_title = image_title.strip('\n')
+            image_dict = {}
             image_dict = {'Url': image_url, 'Title': image_title}
             if image_dict['Title'] != '':
                 hemisphere_images.append(image_dict)
