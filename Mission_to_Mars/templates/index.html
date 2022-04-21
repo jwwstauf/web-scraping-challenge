@@ -28,7 +28,7 @@
 
       <div class="row" id="mars-featured-image">
         <div class="col-md-8">
-          <h2>Featured Mars Image</h2>
+          <h1>Featured Mars Image</h1>
 
           <img
             src="{{mars.featured_image}}"
@@ -38,7 +38,7 @@
 
       <div class="row" id="mars-hemispheres">
         <div class="page-header">
-          <h2 class="text-center">Mars Hemispheres</h2>
+          <h1 class="text-center">Mars Hemispheres</h1>
         </div>
 
         {% for hemisphere in mars.hemispheres %}
@@ -46,7 +46,7 @@
           <div class="thumbnail">
             <img src="{{hemisphere.Url}}">
             <div class="caption">
-              <h3>{{hemisphere.Title}}</h3>
+              <h4>{{hemisphere.Title}}</h4>
             </div>
           </div>
         </div>
